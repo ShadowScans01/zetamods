@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZetaMods - Directorio de Juegos y Mods</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans min-h-screen pb-12">
+
+  <!-- ENCABEZADO / NAVBAR -->
+  <header class="border-b border-gray-800 bg-gray-950 p-4 sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div class="flex items-center gap-2">
+        <h1 class="text-2xl font-bold text-indigo-500 tracking-wider">ZETA<span class="text-white">MODS</span></h1>
+        <span class="text-xs bg-indigo-900/50 text-indigo-300 px-2 py-0.5 rounded-full border border-indigo-700/50">Directorio</span>
+      </div>
+      <div class="flex items-center gap-3 w-full sm:w-auto">
+        <input type="text" id="buscador" placeholder="Buscar juego o mod..." class="bg-gray-900 text-sm px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-indigo-500 w-full sm:w-64">
+        <button onclick="abrirModalAdmin()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition">＋ Agregar Mod</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="max-w-6xl mx-auto p-4 sm:p-6">
+    
+    <!-- FILTROS DE CATEGORÍA (Sin minijuegos) -->
+    <div id="filtros-container" class="flex gap-2 overflow-x-auto pb-4 mb-6 text-sm">
+      <button onclick="filtrarCategoria('Todos')" class="cat-btn bg-indigo-600 text-white px-4 py-2 rounded-full font-medium whitespace-nowrap transition">Todos</button>
+      <button onclick="filtrarCategoria('Mods Android')" class="cat-btn bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2 rounded-full font-medium whitespace-nowrap transition">Mods Android</button>
+      <button onclick="filtrarCategoria('Mods PC')" class="cat-btn bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2 rounded-full font-medium whitespace-nowrap transition">Mods PC</button>
+      <button onclick="filtrarCategoria('Adultos 18+')" class="cat-btn bg-gray-800 hover:bg-gray-700 text-pink-400 px-4 py-2 rounded-full font-medium whitespace-nowrap transition border border-pink-900/40">🔞 Adultos 18+</button>
+    </div>
+
+    <!-- REJILLA DE JUEGOS Y MODS -->
+    <div id="contenedor-juegos" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <!-- Los elementos se cargan automáticamente aquí -->
+    </div>
+
+  </main>
+
+  <!-- MODAL DE DETALLES DEL MOD -->
+  <div id="modal-detalles" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden justify-center items-center p-4 z-50">
+    <div class="bg-gray-950 border border-gray-800 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 relative shadow-2xl">
+      <button onclick="cerrarModalDetalles()" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-gray-900 p-2 rounded-full text-xs">✕</button>
+      
+      <div id="contenido-detalles">
+        <!-- Contenido inyectado dinámicamente -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PARA AGREGAR NUEVO JUEGO/MOD -->
+  <div id="modal-admin" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden justify-center items-center p-4 z-50">
+    <div class="bg-gray-950 border border-gray-800 rounded-2xl w-full max-w-lg p-6 relative">
+      <h2 class="text-xl font-bold text-white mb-4">Panel de Administración - Agregar Mod</h2>
+      
+      <form id="form-agregar" onsubmit="guardarMod(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs text-gray-400 mb-1">Título del Juego o Mod</label>
+          <input type="text" id="input-titulo" required placeholder="Ej. Minecraft Modpack v2" class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div>
+          <label class="block text-xs text-gray-400 mb-1">Categoría</label>
+          <select id="input-categoria" class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+            <option value="Mods PC">Mods PC</option>
+            <option value="Mods Android">Mods Android</option>
+            <option value="Adultos 18+">Adultos 18+</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs text-gray-400 mb-1">URL de la Imagen (Portada)</label>
+          <input type="url" id="input-imagen" required placeholder="https://ejemplo.com/imagen.jpg" class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div>
+          <label class="block text-xs text-gray-400 mb-1">Enlace de Descarga Directa (Mega, Google Drive, etc.)</label>
+          <input type="url" id="input-enlace" required placeholder="https://mega.nz/file/..." class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div>
+          <label class="block text-xs text-gray-400 mb-1">Descripción Breve (Vista previa)</label>
+          <input type="text" id="input-descripcion" required placeholder="Breve resumen del juego..." class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div>
+          <label class="block text-xs text-gray-400 mb-1">Características Completas del Mod (Lista detallada, notas, etc.)</label>
+          <textarea id="input-caracteristicas" rows="4" required placeholder="1. Contenido completo desbloqueado&#10;2. Modo Dios&#10;Notas: ..." class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-indigo-500"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-2">
+          <button type="button" onclick="cerrarModalAdmin()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2 rounded-lg text-sm font-medium transition">Cancelar</button>
+          <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2 rounded-lg text-sm font-medium transition">Publicar Mod</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SCRIPT DE FUNCIONAMIENTO -->
+  <script>
+    let mods = JSON.parse(localStorage.getItem('zetamods_lista')) || [
+      {
+        id: 1,
+        titulo: "GTA San Andreas - Mega Mod",
+        categoria: "Mods PC",
+        imagen: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=500&q=80",
+        enlace: "https://mega.nz",
+        descripcion: "Gráficos mejorados, nuevos autos y texturas en alta definición.",
+        caracteristicas: "1. Gráficos ultra realistas.\n2. Nuevas misiones secundarias.\n3. Selector de skins avanzado.\n\nNotas:\nAlgunos mods requieren una PC de gama media-alta.",
+        descargas: 12
+      }
+    ];
+
+    let categoriaActual = "Todos";
+
+    function guardarEnStorage() {
+      localStorage.setItem('zetamods_lista', JSON.stringify(mods));
+    }
+
+    function renderizarMods(listaAFiltrar = mods) {
+      const contenedor = document.getElementById('contenedor-juegos');
+      contenedor.innerHTML = '';
+
+      if (listaAFiltrar.length === 0) {
+        contenedor.innerHTML = `<p class="text-gray-500 text-sm col-span-full text-center py-10">No hay elementos en esta categoría o búsqueda.</p>`;
+        return;
+      }
+
+      listaAFiltrar.forEach(mod => {
+        const totalDescargas = mod.descargas || 0;
+        const tarjeta = document.createElement('div');
+        tarjeta.className = "bg-gray-950 border border-gray-800 rounded-xl overflow-hidden hover:border-indigo-500/50 transition duration-300 flex flex-col justify-between shadow-lg cursor-pointer";
+        
+        tarjeta.onclick = (e) => {
+          if(e.target.tagName !== 'BUTTON') abrirDetalles(mod.id);
+        };
+
+        tarjeta.innerHTML = `
+          <div>
+            <div class="relative h-40 overflow-hidden bg-gray-900">
+              <img src="${mod.imagen}" alt="${mod.titulo}" class="w-full h-full object-cover hover:scale-105 transition duration-500" onerror="this.src='https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=500&q=80'">
+              <span class="absolute top-2 left-2 text-[10px] bg-indigo-950/80 backdrop-blur-md text-indigo-300 border border-indigo-800/50 px-2 py-0.5 rounded font-medium">${mod.categoria}</span>
+              <span class="absolute bottom-2 right-2 text-[10px] bg-black/70 backdrop-blur-md text-gray-300 px-2 py-0.5 rounded-full flex items-center gap-1">📥 ${totalDescargas}</span>
+            </div>
+            <div class="p-4">
+              <h2 class="font-bold text-base text-white line-clamp-1">${mod.titulo}</h2>
+              <p class="text-gray-400 text-xs mt-1.5 line-clamp-2">${mod.descripcion}</p>
+            </div>
+          </div>
+          <div class="p-4 pt-0 flex gap-2">
+            <button onclick="registrarDescarga(${mod.id}, '${mod.enlace}')" class="flex-1 text-center bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg font-medium text-xs transition shadow-sm">📥 Descargar</button>
+            <button onclick="intentarBorrar(${mod.id}); event.stopPropagation();" class="bg-gray-900 hover:bg-red-950/60 text-gray-500 hover:text-red-400 px-3 py-2 rounded-lg text-xs transition border border-gray-800 hover:border-red-900/50" title="Eliminar">🗑️</button>
+          </div>
+        `;
+        contenedor.appendChild(tarjeta);
+      });
+    }
+
+    function abrirDetalles(id) {
+      const mod = mods.find(m => m.id === id);
+      if(!mod) return;
+
+      const contenedorDetalles = document.getElementById('contenido-detalles');
+      const caracteristicasHtml = (mod.caracteristicas || "Sin detalles específicos.").replace(/\n/g, '<br>');
+
+      contenedorDetalles.innerHTML = `
+        <div class="flex flex-col md:flex-row gap-6">
+          <div class="w-full md:w-1/2 h-56 rounded-xl overflow-hidden bg-gray-900 border border-gray-800">
+            <img src="${mod.imagen}" alt="${mod.titulo}" class="w-full h-full object-cover">
+          </div>
+          <div class="w-full md:w-1/2 flex flex-col justify-between">
+            <div>
+              <span class="text-xs bg-indigo-950/80 text-indigo-300 border border-indigo-800/50 px-2 py-0.5 rounded font-medium">${mod.categoria}</span>
+              <h2 class="text-xl font-bold text-white mt-2">${mod.titulo}</h2>
+              <p class="text-gray-400 text-sm mt-2">${mod.descripcion}</p>
+            </div>
+            <div class="mt-4">
+              <button onclick="registrarDescarga(${mod.id}, '${mod.enlace}')" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-2.5 rounded-xl font-bold text-sm transition shadow-lg flex justify-center items-center gap-2">📥 Descargar Archivo (${mod.descargas || 0} descargas)</button>
+            </div>
+          </div>
+        </div>
+        <div class="mt-6 border-t border-gray-800 pt-4">
+          <h3 class="text-indigo-400 font-bold text-sm mb-2">📋 Características del MOD y Notas:</h3>
+          <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 text-xs text-gray-300 leading-relaxed whitespace-pre-line">${caracteristicasHtml}</div>
+        </div>
+      `;
+
+      document.getElementById('modal-detalles').classList.remove('hidden');
+      document.getElementById('modal-detalles').classList.add('flex');
+    }
+
+    function cerrarModalDetalles() {
+      document.getElementById('modal-detalles').classList.remove('flex');
+      document.getElementById('modal-detalles').classList.add('hidden');
+    }
+
+    function registrarDescarga(idMod, urlEnlace) {
+      let modEncontrado = mods.find(m => m.id === Number(idMod));
+      if (modEncontrado) {
+        modEncontrado.descargas = (modEncontrado.descargas || 0) + 1;
+        guardarEnStorage();
+        filtrarCategoria(categoriaActual);
+        if(!document.getElementById('modal-detalles').classList.contains('hidden')) {
+          abrirDetalles(idMod);
+        }
+      }
+      window.open(urlEnlace, '_blank');
+    }
+
+    function abrirModalAdmin() {
+      const passwordSecreta = "1234";
+      const ingreso = prompt("Introduce tu contraseña de administrador:");
+      
+      if (ingreso === passwordSecreta) {
+        document.getElementById('modal-admin').classList.remove('hidden');
+        document.getElementById('modal-admin').classList.add('flex');
+      } else if (ingreso !== null) {
+        alert("Contraseña incorrecta. Acceso denegado.");
+      }
+    }
+
+    function cerrarModalAdmin() {
+      document.getElementById('modal-admin').classList.remove('flex');
+      document.getElementById('modal-admin').classList.add('hidden');
+      document.getElementById('form-agregar').reset();
+    }
+
+    function guardarMod(e) {
+      e.preventDefault();
+      const nuevoMod = {
+        id: Date.now(),
+        titulo: document.getElementById('input-titulo').value,
+        categoria: document.getElementById('input-categoria').value,
+        imagen: document.getElementById('input-imagen').value,
+        enlace: document.getElementById('input-enlace').value,
+        descripcion: document.getElementById('input-descripcion').value,
+        caracteristicas: document.getElementById('input-caracteristicas').value,
+        descargas: 0
+      };
+
+      mods.unshift(nuevoMod);
+      guardarEnStorage();
+      cerrarModalAdmin();
+      filtrarCategoria(categoriaActual);
+    }
+
+    function intentarBorrar(id) {
+      const passwordSecreta = "1234";
+      const ingreso = prompt("Introduce la contraseña para eliminar este mod:");
+      
+      if (ingreso === passwordSecreta) {
+        if (confirm("¿Estás seguro de eliminar este mod del directorio?")) {
+          mods = mods.filter(m => m.id !== id);
+          guardarEnStorage();
+          filtrarCategoria(categoriaActual);
+        }
+      } else if (ingreso !== null) {
+        alert("Contraseña incorrecta.");
+      }
+    }
+
+    function filtrarCategoria(cat) {
+      categoriaActual = cat;
+      
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        if (btn.textContent.includes(cat) || (cat === 'Todos' && btn.textContent === 'Todos')) {
+          btn.className = "cat-btn bg-indigo-600 text-white px-4 py-2 rounded-full font-medium whitespace-nowrap transition";
+        } else {
+          btn.className = "cat-btn bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2 rounded-full font-medium whitespace-nowrap transition";
+        }
+      });
+
+      const textoBusqueda = document.getElementById('buscador').value.toLowerCase();
+      
+      let filtrados = mods;
+      if (cat !== 'Todos') {
+        filtrados = filtrados.filter(m => m.categoria === cat);
+      }
+
+      if (textoBusqueda) {
+        filtrados = filtrados.filter(m => m.titulo.toLowerCase().includes(textoBusqueda) || m.descripcion.toLowerCase().includes(textoBusqueda));
+      }
+
+      renderizarMods(filtrados);
+    }
+
+    document.getElementById('buscador').addEventListener('input', () => {
+      filtrarCategoria(categoriaActual);
+    });
+
+    renderizarMods();
+  </script>
+</body>
+</html>
