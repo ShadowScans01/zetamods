@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZetaMods - Directorio H 18+</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Supabase JS CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 font-sans min-h-screen pb-12 relative flex flex-col justify-between">
+
+  <!-- 🔞 MODAL DE ADVERTENCIA DE EDAD (18+) -->
+  <div id="modal-edad" class="fixed inset-0 bg-black/95 backdrop-blur-md flex justify-center items-center p-4 z-50">
+    <div class="bg-gray-950 border border-gray-800 rounded-2xl w-full max-w-md p-6 text-center shadow-2xl">
+      <div class="text-3xl mb-3">🔞</div>
+      <h2 class="text-xl font-bold text-white mb-2">Contenido Exclusivo para Adultos (18+)</h2>
+      <p class="text-gray-400 text-xs mb-6 leading-relaxed">
+        Este sitio web contiene material explícito y juegos para adultos. Debes ser mayor de 18 años para ingresar.
+      </p>
+      <div class="flex flex-col gap-2">
+        <button type="button" onclick="aceptarEdad()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-2.5 rounded-xl text-xs font-bold transition shadow-lg cursor-pointer">Soy mayor de 18 años - Entrar</button>
+        <button type="button" onclick="rechazarEdad()" class="w-full bg-gray-900 hover:bg-gray-800 text-gray-400 py-2 rounded-xl text-xs font-medium transition cursor-pointer">Salir</button>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <!-- ENCABEZADO / NAVBAR -->
+    <header class="border-b border-gray-800 bg-gray-950 p-4 sticky top-0 z-40">
+      <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="flex items-center gap-2">
+          <h1 class="text-2xl font-bold text-indigo-500 tracking-wider">ZETA<span class="text-white">MODS</span></h1>
+          <span class="text-xs bg-pink-950 text-pink-300 px-2 py-0.5 rounded-full border border-pink-800/50">Adultos 18+</span>
+        </div>
+        
+        <!-- BUSCADOR + JUEGO ALEATORIO + AGREGAR MOD -->
+        <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          <input type="text" id="buscador" oninput="handleSearch()" placeholder="Buscar juego H..." class="bg-gray-900 text-sm px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-indigo-500 flex-1 sm:w-56">
+          <button type="button" onclick="abrirJuegoAleatorio()" class="bg-pink-600 hover:bg-pink-500 text-white px-3 py-2 rounded-lg text-sm font-medium transition cursor-pointer" title="Juego Aleatorio">🎲 Sorpresa</button>
+          <button type="button" onclick="abrirModalAdmin()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition cursor-pointer">＋ Agregar Mod</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- 💰 ANUNCIO 1: BANNER SUPERIOR (468x60) -->
+    <div class="max-w-4xl mx-auto my-3 text-center overflow-x-auto px-4">
+      <script>
+        atOptions = {
+          'key' : 'b9f6de885fce7a2735d4c84a2e397378',
+          'format' : 'iframe',
+          'height' : 60,
+          'width' : 468,
+          'params' : {}
+        };
+      </script>
+      <script src="https://bellnewyork.org/22/b9f6de885fce7a2735d4c84a2e397378"></script>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="max-w-6xl mx-auto p-4 sm:p-6">
+      
+      <!-- FILTROS DE CATEGORÍA LIMPIOS -->
+      <div id="filtros-container" class="flex gap-2 overflow-x-auto pb-4 mb-2 text-sm">
+        <button type="button" onclick="filtrarCategoria('Todos')" class="cat-btn bg-indigo-600 text-white px-4 py-2 rounded-full font-medium whitespace-nowrap transition cursor-pointer">Todos</button>
+        <button type="button" onclick="filtrarCategoria('Android')" class="cat-btn bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2 rounded-full font-medium whitespace-nowrap transition cursor-pointer">Android</button>
+        <button type="button" onclick="filtrarCategoria('PC')" class="cat-btn bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2 rounded-full font-medium whitespace-nowrap transition cursor-pointer">PC</button>
+      </div>
+
+      <!-- 💰 ANUNCIO 2: BANNER 300x250 (Adsterra) -->
+      <div id="espacio-anuncio" class="my-4 p-3 bg-gray-950 border border-gray-800 rounded-xl text-center flex justify-center items-center overflow-hidden">
+        <script>
+          atOptions = {
+            'key' : 'f08566fdd4700f8267bea1f2fc74fc60',
+            'format' : 'iframe',
+            'height' : 250,
+            'width' : 300,
+            'params' : {}
+          };
+        </script>
+        <script src="https://bellnewyork.org/22/f08566fdd4700f8267bea1f2fc74fc60"></script>
+      </div>
+
+      <!-- REJILLA DE JUEGOS -->
+      <div id="contenedor-juegos" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <p class="text-gray-400 text-sm col-span-full text-center py-10">Cargando juegos desde Supabase...</p>
+      </div>
+
+      <!-- 💰 ANUNCIO 3: BANNER MÓVIL 320x50 (Adsterra) -->
+      <div class="my-6 flex justify-center overflow-hidden">
+        <script>
+          atOptions = {
+            'key' : '67839f3f269570d4c00c7f03d2250b8c',
+            'format' : 'iframe',
+            'height' : 50,
+            'width' : 320,
+            'params' : {}
+          };
+        </script>
+        <script src="https://bellnewyork.org/22/67839f3f269570d4c00c7f03d2250b8c"></script>
+      </div>
+
+      <!-- 📄 BARRA DE PAGINACIÓN -->
+      <div id="paginacion-container" class="flex justify-center items-center gap-2 mt-8 overflow-x-auto py-2"></div>
+
+    </main>
+  </div>
+
+  <!-- 💰 ANUNCIO 4: BANNER INFERIOR (FOOTER) -->
+  <footer class="border-t border-gray-800 bg-gray-950 py-6 text-center text-xs text-gray-500 mt-12">
+    <div class="max-w-4xl mx-auto mb-4 flex justify-center overflow-hidden">
+      <script>
+        atOptions = {
+          'key' : 'b9f6de885fce7a2735d4c84a2e397378',
+          'format' : 'iframe',
+          'height' : 60,
+          'width' : 468,
+          'params' : {}
+        };
+      </script>
+      <script src="https://bellnewyork.org/22/b9f6de885fce7a2735d4c84a2e397378"></script>
+    </div>
+    <p>ZetaMods © 2026 - Todos los derechos reservados</p>
+  </footer>
+
+  <!-- MODAL DE DETALLES DEL MOD + COMENTARIOS + RELACIONADOS -->
+  <div id="modal-detalles" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden justify-center items-center p-4 z-50">
+    <div class="bg-gray-950 border border-gray-800 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 relative shadow-2xl">
+      <button type="button" onclick="cerrarModalDetalles()" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-gray-900 p-2 rounded-full text-xs z-10 cursor-pointer">✕</button>
+      <div id="contenido-detalles"></div>
+    </div>
+  </div>
+
+  <!-- MODAL DE ADMINISTRACIÓN -->
+  <div id="modal-admin" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden justify-center items-center p-4 z-50">
+    <div class="bg-gray-950 border border-gray-800 rounded-2xl w-full max-w-lg p-6 relative max-h-[90vh] overflow-y-auto">
+      <h2 class="text-xl font-bold text-white mb-4">Panel de Administración - Agregar Mod H</h2>
+      
+      <form id="form-agregar" onsubmit="guardarMod(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs text-gray-400 mb-1">Título del Juego</label>
+          <input type="text" id="input-titulo" required placeholder="Ej. Anime Quest H v1.0" class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div>
+          <label class="block text-xs text-gray-400 mb-1">Categoría / Plataforma</label>
+          <select id="input-categoria" class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+            <option value="Android">Android</option>
+            <option value="PC">PC</option>
+            <option value="Adultos 18+">Adultos 18+</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs text-gray-400 mb-1">Etiqueta (Ej. MILF, 3D, RPG)</label>
+          <input type="text" id="input-etiqueta" placeholder="Ej. MILF / 3D" class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div>
+          <label class="block text-xs text-gray-400 mb-1">URL de la Imagen (Portada)</label>
+          <input type="url" id="input-imagen" required placeholder="https://ejemplo.com/imagen.jpg" class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div>
+          <label class="block text-xs text-gray-400 mb-1">Enlace de Descarga Directa</label>
+          <input type="url" id="input-enlace" required placeholder="https://mega.nz/file/..." class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div>
+          <label class="block text-xs text-gray-400 mb-1">Descripción Breve</label>
+          <input type="text" id="input-descripcion" required placeholder="Breve resumen del juego..." class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div>
+          <label class="block text-xs text-gray-400 mb-1">Instrucciones de Instalación</label>
+          <input type="text" id="input-instrucciones" placeholder="Ej. Extraer y jugar / Instalar APK..." class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+        </div>
+
+        <div>
+          <label class="block text-xs text-gray-400 mb-1">Características y Notas del Mod</label>
+          <textarea id="input-caracteristicas" rows="4" required placeholder="1. Parches aplicados&#10;2. Idioma: Español&#10;3. Versión sin censura..." class="w-full bg-gray-900 border border-gray-800 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-indigo-500"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-2">
+          <button type="button" onclick="cerrarModalAdmin()" class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2 rounded-lg text-sm font-medium transition cursor-pointer">Cancelar</button>
+          <button type="submit" id="btn-submit-mod" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2 rounded-lg text-sm font-medium transition cursor-pointer">Publicar Mod</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SCRIPT Y LÓGICA DE LA PÁGINA -->
+  <script>
+    const SUPABASE_URL = "https://yjktcttcyeezqcqfitla.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlqa3RjdHRjeWVlenFjcWZpdGxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwNDI4MzEsImV4cCI6MjEwODYxODgzMX0.-z3QTWS8mV0uNUzYIh0wJWhbwUxr-wG-xGbYBjKrmtA";
+
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let mods = [];
+    let categoriaActual = "Todos";
+    let modSeleccionadoId = null;
+
+    let paginaActual = 1;
+    const modsPorPagina = 8;
+
+    function aceptarEdad() {
+      const modalEdad = document.getElementById('modal-edad');
+      if (modalEdad) {
+        modalEdad.classList.add('hidden');
+        modalEdad.style.display = 'none';
+      }
+    }
+
+    function rechazarEdad() { 
+      window.location.href = "https://www.google.com"; 
+    }
+
+    async function obtenerMods() {
+      const { data, error } = await supabaseClient
+        .from('mods')
+        .select('*')
+        .order('id', { ascending: false });
+
+      if (error) {
+        console.error('Error al cargar juegos:', error);
+        document.getElementById('contenedor-juegos').innerHTML = `<p class="text-red-400 text-sm col-span-full text-center py-10">Error al conectar con Supabase.</p>`;
+        return;
+      }
+
+      mods = data || [];
+      filtrarCategoria(categoriaActual);
+    }
+
+    function handleSearch() {
+      paginaActual = 1;
+      filtrarCategoria(categoriaActual);
+    }
+
+    function abrirJuegoAleatorio() {
+      if (!mods || mods.length === 0) {
+        alert("Aún no hay juegos disponibles para elegir al azar.");
+        return;
+      }
+      const index = Math.floor(Math.random() * mods.length);
+      abrirDetalles(mods[index].id);
+    }
+
+    function renderizarMods(listaAFiltrar = mods) {
+      const contenedor = document.getElementById('contenedor-juegos');
+      contenedor.innerHTML = '';
+
+      if (listaAFiltrar.length === 0) {
+        contenedor.innerHTML = `<p class="text-gray-500 text-sm col-span-full text-center py-10">No se encontraron juegos H.</p>`;
+        document.getElementById('paginacion-container').innerHTML = '';
+        return;
+      }
+
+      const totalPaginas = Math.ceil(listaAFiltrar.length / modsPorPagina);
+      if (paginaActual > totalPaginas) paginaActual = totalPaginas;
+      if (paginaActual < 1) paginaActual = 1;
+
+      const inicio = (paginaActual - 1) * modsPorPagina;
+      const fin = inicio + modsPorPagina;
+      const modsDeLaPagina = listaAFiltrar.slice(inicio, fin);
+
+      modsDeLaPagina.forEach(mod => {
+        const totalDescargas = mod.descargas || 0;
+        const tarjeta = document.createElement('div');
+        tarjeta.className = "bg-gray-950 border border-gray-800 rounded-xl overflow-hidden hover:border-indigo-500/50 transition duration-300 flex flex-col justify-between shadow-lg cursor-pointer";
+        
+        tarjeta.onclick = (e) => {
+          if (e.target.tagName !== 'BUTTON') abrirDetalles(mod.id);
+        };
+
+        const urlImagen = mod.imagen || 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=500&q=80';
+        const etiquetaBadge = mod.etiqueta ? `<span class="absolute top-2 right-2 text-[10px] bg-pink-600 text-white px-2 py-0.5 rounded font-bold shadow">${mod.etiqueta}</span>` : '';
+
+        tarjeta.innerHTML = `
+          <div>
+            <div class="relative h-44 overflow-hidden bg-gray-900 border-b border-gray-800">
+              <img src="${urlImagen}" alt="${mod.titulo}" class="w-full h-full object-cover hover:scale-105 transition duration-500" onerror="this.src='https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=500&q=80'">
+              <span class="absolute top-2 left-2 text-[10px] bg-indigo-950/85 backdrop-blur-md text-indigo-300 border border-indigo-800/50 px-2 py-0.5 rounded font-medium">${mod.categoria}</span>
+              ${etiquetaBadge}
+              <span class="absolute bottom-2 right-2 text-[10px] bg-black/70 backdrop-blur-md text-yellow-400 px-2 py-0.5 rounded-full flex items-center gap-1">⭐ 4.8 | 📥 ${totalDescargas}</span>
+            </div>
+            <div class="p-4">
+              <h2 class="font-bold text-base text-white line-clamp-1">${mod.titulo}</h2>
+              <p class="text-gray-400 text-xs mt-1.5 line-clamp-2">${mod.descripcion || ''}</p>
+            </div>
+          </div>
+          <div class="p-4 pt-0 flex gap-2">
+            <button type="button" onclick="registrarDescarga(${mod.id}, '${mod.enlace}', ${mod.descargas || 0}); event.stopPropagation();" class="flex-1 text-center bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg font-medium text-xs transition shadow-sm cursor-pointer">📥 Descargar</button>
+            <button type="button" onclick="intentarBorrar(${mod.id}); event.stopPropagation();" class="bg-gray-900 hover:bg-red-950/60 text-gray-500 hover:text-red-400 px-3 py-2 rounded-lg text-xs transition border border-gray-800 hover:border-red-900/50 cursor-pointer" title="Eliminar">🗑️</button>
+          </div>
+        `;
+        contenedor.appendChild(tarjeta);
+      });
+
+      renderizarBotonesPaginacion(totalPaginas, listaAFiltrar);
+    }
+
+    function renderizarBotonesPaginacion(totalPaginas, listaAFiltrar) {
+      const pagCont = document.getElementById('paginacion-container');
+      pagCont.innerHTML = '';
+
+      if (totalPaginas <= 1) return;
+
+      const btnAnt = document.createElement('button');
+      btnAnt.type = "button";
+      btnAnt.innerText = "◀ Anterior";
+      btnAnt.className = `px-3 py-1.5 rounded-lg text-xs font-medium border transition ${paginaActual === 1 ? 'bg-gray-900 text-gray-600 border-gray-800 cursor-not-allowed' : 'bg-gray-800 hover:bg-gray-700 text-gray-200 border-gray-700 cursor-pointer'}`;
+      btnAnt.disabled = paginaActual === 1;
+      btnAnt.onclick = () => { paginaActual--; renderizarMods(listaAFiltrar); window.scrollTo({top: 0, behavior: 'smooth'}); };
+      pagCont.appendChild(btnAnt);
+
+      for (let i = 1; i <= totalPaginas; i++) {
+        const btnNum = document.createElement('button');
+        btnNum.type = "button";
+        btnNum.innerText = i;
+        btnNum.className = `px-3 py-1.5 rounded-lg text-xs font-medium border transition cursor-pointer ${i === paginaActual ? 'bg-indigo-600 text-white border-indigo-500 shadow-md' : 'bg-gray-800 hover:bg-gray-700 text-gray-300 border-gray-700'}`;
+        btnNum.onclick = () => { paginaActual = i; renderizarMods(listaAFiltrar); window.scrollTo({top: 0, behavior: 'smooth'}); };
+        pagCont.appendChild(btnNum);
+      }
+
+      const btnSig = document.createElement('button');
+      btnSig.type = "button";
+      btnSig.innerText = "Próximo ▶";
+      btnSig.className = `px-3 py-1.5 rounded-lg text-xs font-medium border transition ${paginaActual === totalPaginas ? 'bg-gray-900 text-gray-600 border-gray-800 cursor-not-allowed' : 'bg-gray-800 hover:bg-gray-700 text-gray-200 border-gray-700 cursor-pointer'}`;
+      btnSig.disabled = paginaActual === totalPaginas;
+      btnSig.onclick = () => { paginaActual++; renderizarMods(listaAFiltrar); window.scrollTo({top: 0, behavior: 'smooth'}); };
+      pagCont.appendChild(btnSig);
+    }
+
+    function abrirDetalles(id) {
+      const mod = mods.find(m => Number(m.id) === Number(id));
+      if (!mod) return;
+
+      modSeleccionadoId = mod.id;
+      const contenedorDetalles = document.getElementById('contenido-detalles');
+      const caracteristicasHtml = (mod.caracteristicas || "Sin detalles específicos.").replace(/\n/g, '<br>');
+      const urlImagen = mod.imagen || 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=500&q=80';
+      const instruccionesTexto = mod.instrucciones || 'Sigue los pasos habituales de instalación.';
+
+      const relacionados = mods.filter(m => m.categoria === mod.categoria && Number(m.id) !== Number(mod.id)).slice(0, 2);
+      let relacionadosHtml = '';
+
+      if (relacionados.length > 0) {
+        relacionadosHtml = `
+          <div class="mt-6 border-t border-gray-800 pt-4">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-indigo-300 mb-2">🔥 Juegos Relacionados Recomendados</h4>
+            <div class="grid grid-cols-2 gap-3">
+              ${relacionados.map(r => `
+                <div onclick="abrirDetalles(${r.id})" class="bg-gray-900 border border-gray-800 rounded-lg p-2 flex gap-2 items-center cursor-pointer hover:border-indigo-500/50 transition">
+                  <img src="${r.imagen}" class="w-12 h-12 object-cover rounded" onerror="this.src='https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=500&q=80'">
+                  <div class="overflow-hidden">
+                    <p class="text-xs font-bold text-white truncate">${r.titulo}</p>
+                    <span class="text-[10px] text-gray-400">${r.categoria}</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      contenedorDetalles.innerHTML = `
+        <div class="flex flex-col md:flex-row gap-6">
+          <div class="w-full md:w-1/2 h-56 rounded-xl overflow-hidden bg-gray-900 border border-gray-800">
+            <img src="${urlImagen}" alt="${mod.titulo}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=500&q=80'">
+          </div>
+          <div class="w-full md:w-1/2 flex flex-col justify-between">
+            <div>
+              <span class="text-xs bg-indigo-950/85 text-indigo-300 border border-indigo-800/50 px-2 py-0.5 rounded font-medium">${mod.categoria}</span>
+              <h2 class="text-xl font-bold text-white mt-2">${mod.titulo}</h2>
+              <p class="text-gray-300 text-sm mt-2 leading-relaxed">${mod.descripcion || 'Sin descripción disponible.'}</p>
+            </div>
+            
+            <div class="my-3 flex items-center gap-1">
+              <span class="text-xs text-gray-400 mr-1">Calificación:</span>
+              <button type="button" onclick="calificar('1')" class="text-yellow-400 text-sm cursor-pointer">★</button>
+              <button type="button" onclick="calificar('2')" class="text-yellow-400 text-sm cursor-pointer">★</button>
+              <button type="button" onclick="calificar('3')" class="text-yellow-400 text-sm cursor-pointer">★</button>
+              <button type="button" onclick="calificar('4')" class="text-yellow-400 text-sm cursor-pointer">★</button>
+              <button type="button" onclick="calificar('5')" class="text-yellow-400 text-sm cursor-pointer">★</button>
+              <span class="text-xs text-gray-500 ml-1">(4.8/5)</span>
+            </div>
+
+            <div class="flex flex-col gap-2">
+              <button type="button" onclick="registrarDescarga(${mod.id}, '${mod.enlace}', ${mod.descargas || 0})" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-2.5 rounded-xl font-bold text-sm transition shadow-lg flex justify-center items-center gap-2 cursor-pointer">📥 Descargar Archivo (${mod.descargas || 0} descargas)</button>
+              <button type="button" onclick="reportarEnlace()" class="text-xs text-rose-400 hover:underline text-center cursor-pointer">🚨 Reportar enlace caído</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 bg-gray-900/60 border border-gray-800 rounded-xl p-3">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-indigo-300 mb-1">💡 Instrucciones de Instalación</h4>
+          <p class="text-xs text-gray-300">${instruccionesTexto}</p>
+        </div>
+
+        <div class="mt-4 border-t border-gray-800 pt-4">
+          <h3 class="text-indigo-400 font-bold text-sm mb-2">📋 Características del MOD y Notas:</h3>
+          <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 text-xs text-gray-300 leading-relaxed whitespace-pre-line">${caracteristicasHtml}</div>
+        </div>
+
+        ${relacionadosHtml}
+
+        <div class="mt-6 border-t border-gray-800 pt-4">
+          <h3 class="text-indigo-400 font-bold text-sm mb-3">💬 Opiniones de la Comunidad:</h3>
+          
+          <div id="contenedor-comentarios" class="space-y-3 mb-4 max-h-48 overflow-y-auto pr-1">
+            <p class="text-gray-500 text-xs">Cargando comentarios...</p>
+          </div>
+
+          <form onsubmit="guardarComentario(event)" class="space-y-2 bg-gray-900 border border-gray-800 rounded-xl p-3">
+            <input type="text" id="comentario-autor" required placeholder="Tu nombre o apodo" class="w-full bg-gray-950 border border-gray-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+            <textarea id="comentario-texto" required rows="2" placeholder="Escribe tu opinión sobre este juego..." class="w-full bg-gray-950 border border-gray-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-indigo-500 resize-none"></textarea>
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold py-2 rounded-lg transition cursor-pointer">Publicar Opinión</button>
+          </form>
+        </div>
+      `;
+
+      const modalElement = document.getElementById('modal-detalles');
+      modalElement.classList.remove('hidden');
+      modalElement.classList.add('flex');
+
+      cargarComentarios(mod.id);
+    }
+
+    function calificar(estrellas) {
+      alert(`¡Gracias por calificar este juego con ${estrellas} estrellas!`);
+    }
+
+    function reportarEnlace() {
+      alert("¡Gracias por avisar! Se ha enviado el reporte.");
+    }
+
+    function cerrarModalDetalles() {
+      const modalElement = document.getElementById('modal-detalles');
+      modalElement.classList.remove('flex');
+      modalElement.classList.add('hidden');
+      modSeleccionadoId = null;
+    }
+
+    async function cargarComentarios(modId) {
+      const contComentarios = document.getElementById('contenedor-comentarios');
+      if (!contComentarios) return;
+
+      const { data, error } = await supabaseClient
+        .from('comments')
+        .select('*')
+        .eq('mod_id', modId)
+        .order('created_at', { ascending: false });
+
+      if (error || !data || data.length === 0) {
+        contComentarios.innerHTML = `<p class="text-gray-500 text-xs italic">Aún no hay opiniones. ¡Sé el primero en comentar!</p>`;
+        return;
+      }
+
+      contComentarios.innerHTML = '';
+      data.forEach(c => {
+        const div = document.createElement('div');
+        div.className = "bg-gray-900 border border-gray-800/80 rounded-lg p-2.5 text-xs";
+        div.innerHTML = `
+          <div class="flex justify-between items-center mb-1">
+            <span class="font-bold text-indigo-400">${c.author}</span>
+            <span class="text-[10px] text-gray-500">${new Date(c.created_at).toLocaleDateString()}</span>
+          </div>
+          <p class="text-gray-300">${c.content}</p>
+        `;
+        contComentarios.appendChild(div);
+      });
+    }
+
+    async function guardarComentario(e) {
+      e.preventDefault();
+      const autor = document.getElementById('comentario-autor').value;
+      const texto = document.getElementById('comentario-texto').value;
+
+      if (!modSeleccionadoId) {
+        alert("Error: No se pudo identificar el juego.");
+        return;
+      }
+
+      const { error } = await supabaseClient
+        .from('comments')
+        .insert([{ mod_id: modSeleccionadoId, author: autor, content: texto }]);
+
+      if (error) {
+        console.error("Error comentario:", error);
+        alert("Error al publicar la opinión.");
+      } else {
+        document.getElementById('comentario-texto').value = '';
+        cargarComentarios(modSeleccionadoId);
+      }
+    }
+
+    async function registrarDescarga(idMod, urlEnlace, contadorActual) {
+      window.open(urlEnlace, '_blank');
+
+      const { error } = await supabaseClient
+        .from('mods')
+        .update({ descargas: contadorActual + 1 })
+        .eq('id', idMod);
+
+      if (!error) {
+        obtenerMods();
+      }
+    }
+
+    function abrirModalAdmin() {
+      const passwordSecreta = "0107";
+      const ingreso = prompt("Introduce tu contraseña de administrador:");
+      
+      if (ingreso === passwordSecreta) {
+        document.getElementById('modal-admin').classList.remove('hidden');
+        document.getElementById('modal-admin').classList.add('flex');
+      } else if (ingreso !== null) {
+        alert("Contraseña incorrecta.");
+      }
+    }
+
+    function cerrarModalAdmin() {
+      document.getElementById('modal-admin').classList.remove('flex');
+      document.getElementById('modal-admin').classList.add('hidden');
+      document.getElementById('form-agregar').reset();
+    }
+
+    async function guardarMod(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-submit-mod');
+      btn.innerText = "Publicando...";
+      btn.disabled = true;
+
+      const nuevoMod = {
+        titulo: document.getElementById('input-titulo').value,
+        categoria: document.getElementById('input-categoria').value,
+        etiqueta: document.getElementById('input-etiqueta').value,
+        imagen: document.getElementById('input-imagen').value,
+        enlace: document.getElementById('input-enlace').value,
+        descripcion: document.getElementById('input-descripcion').value,
+        instrucciones: document.getElementById('input-instrucciones').value,
+        caracteristicas: document.getElementById('input-caracteristicas').value,
+        descargas: 0
+      };
+
+      const { error } = await supabaseClient.from('mods').insert([nuevoMod]);
+
+      btn.innerText = "Publicar Mod";
+      btn.disabled = false;
+
+      if (error) {
+        alert("Error al publicar el juego en Supabase.");
+        console.error(error);
+      } else {
+        cerrarModalAdmin();
+        obtenerMods();
+      }
+    }
+
+    async function intentarBorrar(id) {
+      const passwordSecreta = "0107";
+      const ingreso = prompt("Introduce la contraseña para eliminar este mod:");
+      
+      if (ingreso === passwordSecreta) {
+        if (confirm("¿Estás seguro de eliminar este mod?")) {
+          const { error } = await supabaseClient.from('mods').delete().eq('id', id);
+          if (error) alert("Error al eliminar el juego.");
+          else obtenerMods();
+        }
+      } else if (ingreso !== null) {
+        alert("Contraseña incorrecta.");
+      }
+    }
+
+    function filtrarCategoria(cat) {
+      categoriaActual = cat;
+      paginaActual = 1;
+      
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        if (btn.textContent.includes(cat) || (cat === 'Todos' && btn.textContent === 'Todos')) {
+          btn.className = "cat-btn bg-indigo-600 text-white px-4 py-2 rounded-full font-medium whitespace-nowrap transition cursor-pointer";
+        } else {
+          btn.className = "cat-btn bg-gray-800 hover:bg-gray-700 text-gray-300 px-4 py-2 rounded-full font-medium whitespace-nowrap transition cursor-pointer";
+        }
+      });
+
+      aplicarFiltros();
+    }
+
+    function aplicarFiltros() {
+      const textoBusqueda = document.getElementById('buscador').value.toLowerCase();
+      
+      let filtrados = mods;
+      if (categoriaActual !== 'Todos') {
+        filtrados = filtrados.filter(m => m.categoria === categoriaActual);
+      }
+
+      if (textoBusqueda) {
+        filtrados = filtrados.filter(m => 
+          (m.titulo && m.titulo.toLowerCase().includes(textoBusqueda)) || 
+          (m.descripcion && m.descripcion.toLowerCase().includes(textoBusqueda))
+        );
+      }
+
+      renderizarMods(filtrados);
+    }
+
+    // Cargar al inicio
+    obtenerMods();
+  </script>
+
+  <!-- 💰 SCRIPT DE VENTANA EMERGENTE (POPUNDER) DE ADSTERRA -->
+  <script data-cfasync="false" src="https://accountut.com/1/474775ac327d1e2b4275048e104254bf"></script>
+
+</body>
+</html>
